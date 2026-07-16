@@ -5,14 +5,16 @@ public class TestRunner {
     static int pass = 0, fail = 0;
 
     static void check(String name, boolean ok) {
-        if (ok) { pass++; System.out.println("  [PASS] " + name); }
-        else    { fail++; System.out.println("  [FAIL] " + name); }
+        if (ok) { pass++; System.out.println("  [PASS] " + name);
+        } else  { fail++; System.out.println("  [FAIL] " + name);
+        }
     }
 
     public static void main(String[] a) {
         boolean ea = false;
         assert ea = true;
-        if (!ea) System.out.println("** คำเตือน: assertion ปิดอยู่ รันด้วย  java -ea TestRunner **");
+        if (!ea)
+            System.out.println("** คำเตือน: assertion ปิดอยู่ รันด้วย  java -ea TestRunner **");
 
         System.out.println("== Password Validation ==");
 
@@ -21,21 +23,40 @@ public class TestRunner {
 
         // ตัวอย่างแพตเทิร์นทดสอบ "ต้อง throw" ด้วย try/catch
         boolean threw = false;
-        try { PasswordValidator.validate(null); }
-        catch (IllegalArgumentException e) { threw = true; }
-        check("null -> throws IllegalArgumentException", threw);
+        try {
+            PasswordValidator.validate(null);
+        } catch (IllegalArgumentException e) {
+            threw = true;
+        }
+        check("null -> throws IllegalArgumentException",threw);
 
         // TODO: R2 - boundary ความยาว (เช่น 7, 8, 20, 21)
 
+        check("password len = 7 ", PasswordValidator.validate("Abcdef1")==false);
+
+        check("password len = 8 ", PasswordValidator.validate("Abcdef12")==true);
+
+        check("password len = 20", PasswordValidator.validate("Abcdef12456wadoflgid")==true);
+
+        check("password len = 21", PasswordValidator.validate("Abcdef12456wadoflgida")==false);
+
         // TODO: R3 - ไม่มีตัวพิมพ์ใหญ่ -> false
+        check("password no upper", PasswordValidator.validate("adefsd584")==false);
 
         // TODO: R4 - ไม่มีตัวพิมพ์เล็ก -> false
+        check("password no downner", PasswordValidator.validate("AWDSF579")==false);
 
         // TODO: R5 - ไม่มีตัวเลข -> false
+        check("password no number", PasswordValidator.validate("AWDSjhkg")==false);
 
         // TODO: R6 - มีช่องว่าง -> false
+        check("password no space", PasswordValidator.validate("ADsd 124d")==false);
 
         // TODO: boundary อื่นๆ ที่คุณคิดว่าจำเป็น
+
+        check("password only number", PasswordValidator.validate("24168147")==false);
+
+        check("password special char", PasswordValidator.validate("awAD!34#")==true);
 
         System.out.println("==================================");
         System.out.printf("PASS %d / FAIL %d%n", pass, fail);
